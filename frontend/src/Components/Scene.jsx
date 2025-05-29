@@ -39,7 +39,7 @@ export function Model(props) {
       transformControlsRef.current.detach();
       console.log('Detached TransformControls.');
     }
-    console.log('Current transformControlsRef.current:', transformControlsRef.current);
+    console.log('Current transformControlsRef.current:', transformControlsRef.current, selectedNode);
   }, [selectedNode]);
 
   // Optional: Handle keyboard input to toggle TransformControls mode (translate/rotate/scale)
@@ -102,10 +102,6 @@ export function Model(props) {
   // --- Render the Model's Hierarchy ---
   return (
     <group ref={modelRef} {...props} dispose={null}>
-      {/*
-        Iterate over the 'nodes' object from useGraph.
-        This allows you to render individual meshes and bones.
-      */}
       {Object.values(nodes).slice(96,220).map((node) => {
         // Render meshes using SelectableNodeWrapper
         if (node.isMesh) {
@@ -181,13 +177,16 @@ export function Model(props) {
         <TransformControls
           ref={transformControlsRef}
           onDrag={handleDrag} // If you want to react to dragging
+          offset={selectedNode.position}
           onMount={(e) => { // Attach to the domElement for pointer events
+            console.log("mounted");
             e.domElement = gl.domElement;
           }}
           // The `object` prop automatically attaches it,
           // or you can use `transformControlsRef.current.attach(selectedNode)` in useEffect
-          object={selectedNode}
+          // object={selectedNode}
         />
+
       )}
     </group>
   );
