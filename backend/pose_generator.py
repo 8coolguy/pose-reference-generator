@@ -46,6 +46,16 @@ class PoseGenerator:
 
             return output_paths
 
+    def create_prediction(self, image_path, prompt, webhook_url):
+        with open(image_path, "rb") as img:
+            prediction = self.replicate.predictions.create(
+                version="0304f7f774ba7341ef754231f794b1ba3d129e3c46af3022241325ae0c50fb99",
+                input={"image": img, "prompt": prompt},
+                webhook=webhook_url,
+                webhook_events_filter=["completed"]
+            )
+        return prediction
+
 
 if __name__ == "__main__":
     generator = PoseGenerator()
