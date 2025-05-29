@@ -15,6 +15,8 @@ class PoseGenerator:
         os.makedirs(self.input_dir, exist_ok=True)
         os.makedirs(self.output_dir, exist_ok=True)
 
+        self.replicate = replicate.Client()
+
     def generate(self, prompt: str, input_filename: str) -> list[str]:
         input_path = os.path.join(self.input_dir, input_filename)
 
@@ -28,7 +30,7 @@ class PoseGenerator:
             }
 
             print(f"Running model with prompt: '{prompt}' on image: {input_filename}")
-            output = replicate.run(
+            output = self.replicate.run(
                 "jagilley/controlnet-pose:0304f7f774ba7341ef754231f794b1ba3d129e3c46af3022241325ae0c50fb99",
                 input=input_data
             )
