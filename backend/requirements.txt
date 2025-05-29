@@ -1,2 +1,4 @@
 replicate
 python-dotenv
+gunicorn
+flask
