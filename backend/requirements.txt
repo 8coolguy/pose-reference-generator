@@ -2,3 +2,4 @@ replicate
 python-dotenv
 gunicorn
 flask
+flask-cors
