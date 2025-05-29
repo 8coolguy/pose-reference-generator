@@ -31,7 +31,7 @@ class PoseGenerator:
 
             print(f"Running model with prompt: '{prompt}' on image: {input_filename}")
             output = self.replicate.run(
-                "jagilley/controlnet-pose:0304f7f774ba7341ef754231f794b1ba3d129e3c46af3022241325ae0c50fb99",
+                "jagilley/controlnet-normal:cc8066f617b6c99fdb134bc1195c5291cf2610875da4985a39de50ee1f46d81c",
                 input=input_data
             )
 

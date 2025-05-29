@@ -30,6 +30,13 @@ def load_prediction_data():
 # Load existing predictions if file exists
 load_prediction_data()
 
+@app.route("/", methods=["GET"])
+def index():
+    return """
+    <h1>Pose Generator Backend</h1>
+    <p>Status: <strong>Live</strong></p>
+    """, 200
+
 @app.route("/generate", methods=["POST"])
 def generate():
     prompt = request.form.get("prompt")
