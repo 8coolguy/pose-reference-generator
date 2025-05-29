@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { View, OrthographicCamera, OrbitControls, Bounds, Grid, ContactShadows } from '@react-three/drei'
 import * as THREE from "three";
-import { Model } from "./Scene.jsx"
+import { Model } from "./Model.jsx"
 
 
 function Scene(){
@@ -12,7 +12,7 @@ function Scene(){
         <ambientLight intensity={Math.PI / 2} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
         <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-        <Model/>
+        <Model />
         <Grid args={[10, 10]} cellSize={0.6} // Size of each cell
             sectionSize={3} // Size of a major section (thicker lines)
             sectionColor="#444444" // Color of major lines (darker gray)
@@ -29,11 +29,10 @@ function Scene(){
 }
 
 function ControllableView({children}){
+  const cameraRef = useRef();
   return (
     <>
         <color attach="background" args={['#2c2929']} />
-        <OrthographicCamera makeDefault fov={55} />
-        <OrbitControls makeDefault />
         <Bounds fit clip observe margin={1.5}>
           {children}
         </Bounds>
@@ -44,15 +43,13 @@ function ControllableView({children}){
 
 export function Views({setImage}) {
   const ref = useRef();
-  const staticRef = useRef();
-  const dynamicRef = useRef();
-  const initialPosition = [0,5,0];
-  const [cameraState, setCamera] = useState([0, 5, 0, 0, 0, 0]);
+  const modelRef = useRef();
+  const initialPosition = [0,1,0];
   return (
     <div ref={ref} className="container">
-      <div ref={dynamicRef}>
-        <View track={dynamicRef} className="absolute w-full h-full">
-          <ControllableView cameraState={cameraState}>
+      <div>
+        <View className="absolute w-full h-full">
+          <ControllableView>
             <Scene final={true} initialPosition={initialPosition}/>
           </ControllableView>
         </View>

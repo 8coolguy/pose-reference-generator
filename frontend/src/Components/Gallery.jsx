@@ -1,5 +1,4 @@
 export function Gallery({images}){
-    console.log(images);
     const succeededImages = images.filter(image => image.status === 'succeeded');
     const failedImages = images.filter(image => image.status === 'failed');
     const waitImages = images.filter(image => image.status === 'starting');
