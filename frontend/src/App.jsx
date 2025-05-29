@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react'
+import React, { useRef, useState, useCallback, useEffect, memo} from 'react'
 import { Views } from "./Components/Camera.jsx"
 import { Prompt } from "./Components/Prompt.jsx"
 import { Gallery } from "./Components/Gallery.jsx"
@@ -9,10 +9,14 @@ function App() {
   const [input, setInput] = useState("");
   const [images, setImages] = useState([]);
   const intervalRef = useRef();
+  const ref = useRef();
+  const MGallery = memo(Gallery);
+  const MViews = memo(Views);
 
   function fetchStatus(){
     if(images.length < 1) return;
     let newImages = [];
+    let i = 0;
     console.log(images);
     images.forEach(element => {
       if(element.status=="starting"){
@@ -24,9 +28,11 @@ function App() {
               element.status="succeeded";
               element.end = new Date();
               element.outputs= res.outputs;
+              i+=1;
             }
             else if(res.status=="failed"){
               element.status= "failed";
+              i+=1;
             }
             newImages.push(element);
           })
@@ -35,12 +41,12 @@ function App() {
         newImages.push(element);
       }
     });
+    if(i==0) return;
     setImages(newImages);
   }
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      console.log("Interval", images);
       fetchStatus();
     }, 10000);
 
@@ -72,13 +78,13 @@ function App() {
   }
   return (
     <div className="w-full h-full">
-      <h1>Pose Referecne Generator</h1>
+      <h1>Pose Reference Generator</h1>
       <div className="flex h-10/12 flex-row">
         <div className="min-h-full w-full">
-          <Views/> 
+          <Views cameraRef={ref}/> 
         </div>
         <div className="h-full">
-          <Gallery className="bg-opacity-90 backdrop-blur-sm z-50 p-4 overflow-y-auto shadow-lg" images={images} />
+          <MGallery className="bg-opacity-90 backdrop-blur-sm z-50 p-4 overflow-y-auto shadow-lg" images={images} />
         </div>
       </div>
       <Prompt input={input} setInput={setInput} submit={submit}/>

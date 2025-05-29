@@ -6,13 +6,13 @@ import * as THREE from "three";
 import { Model } from "./Model.jsx"
 
 
-function Scene(){
+function Scene({orthoCameraRef}){
     return (
     <>
         <ambientLight intensity={Math.PI / 2} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
         <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-        <Model />
+        <Model orthoCameraRef={orthoCameraRef}/>
         <Grid args={[10, 10]} cellSize={0.6} // Size of each cell
             sectionSize={3} // Size of a major section (thicker lines)
             sectionColor="#444444" // Color of major lines (darker gray)
@@ -41,7 +41,7 @@ function ControllableView({children}){
   )
 }
 
-export function Views({setImage}) {
+export function Views({cameraRef}) {
   const ref = useRef();
   const modelRef = useRef();
   const initialPosition = [0,1,0];
@@ -50,7 +50,7 @@ export function Views({setImage}) {
       <div>
         <View className="absolute w-full h-full">
           <ControllableView>
-            <Scene final={true} initialPosition={initialPosition}/>
+            <Scene orthoCameraRef={cameraRef} final={true} initialPosition={initialPosition}/>
           </ControllableView>
         </View>
       </div>
