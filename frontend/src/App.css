@@ -15,7 +15,7 @@ body,
 }
 
 body {
-  background: #f0f0f0;
+  background: #2c2929;
   font-family: inter;
 }
 
@@ -32,13 +32,6 @@ body {
   left: 0px;
   width: 100vw;
   height: 100vh;
-}
-
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
 .logo {
@@ -71,8 +64,4 @@ body {
 
 .card {
   padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

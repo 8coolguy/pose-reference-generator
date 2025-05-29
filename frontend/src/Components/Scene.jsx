@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'; // Import useState, useCallback, useMemo
-import { useGLTF, TransformControls  }from '@react-three/drei'; // Import TransformControls
+import { useGLTF, TransformControls, PivotControls  }from '@react-three/drei'; // Import TransformControls
 import { useGraph, useThree } from '@react-three/fiber'; // Import useThree
 import { SkeletonUtils } from 'three-stdlib';
 import * as THREE from 'three';
@@ -9,15 +9,10 @@ import { SelectableNodeWrapper } from "./Object.jsx"; // Assuming Object.jsx con
 
 export function Model(props) {
   const { scene } = useGLTF('/scene.gltf');
-  // Clone the scene for independent manipulation.
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  // Use useGraph to get a flat map of all nodes and materials
   const { nodes, materials } = useGraph(clone);
-
-
   const modelRef = useRef(); // Ref for the entire model group
   const transformControlsRef = useRef(); // Ref for TransformControls
-
   const { camera, gl } = useThree(); // Get camera and WebGL renderer context
 
   // State to track the currently selected node (a THREE.Object3D instance)
@@ -28,41 +23,14 @@ export function Model(props) {
     // If the clicked node is already selected, deselect it. Otherwise, select it.
     setSelectedNode(prevSelected => (prevSelected === node ? null : node));
     console.log('Clicked node:', node.name, node.uuid);
+    console.log("Node", node);
   }, []);
 
-  // Effect to attach/detach TransformControls to the selected node
   useEffect(() => {
-    if (selectedNode && transformControlsRef.current) {
-      transformControlsRef.current.attach(selectedNode);
-      console.log('Attached TransformControls to:', selectedNode.name);
-    } else if (transformControlsRef.current) {
-      transformControlsRef.current.detach();
-      console.log('Detached TransformControls.');
-    }
     console.log('Current transformControlsRef.current:', transformControlsRef.current, selectedNode);
   }, [selectedNode]);
 
-  // Optional: Handle keyboard input to toggle TransformControls mode (translate/rotate/scale)
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (!transformControlsRef.current) return;
-      switch (event.key.toLowerCase()) {
-        case 'w': transformControlsRef.current.mode = 'translate'; break;
-        case 'e': transformControlsRef.current.mode = 'rotate'; break;
-        case 'r': transformControlsRef.current.mode = 'scale'; break;
-        default: break;
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Optional: Keep camera focused on selected node when dragging
-  // This is where you'd put the onDrag logic from previous examples
   const handleDrag = useCallback((l, deltaL, w, deltaW) => {
-      // You can add your camera-following logic here if needed
-      // For instance, update OrbitControls target to keep looking at `w`
-
       // 1. Get the world position of the dragged node
     const nodeWorldPosition = new THREE.Vector3();
     nodeWorldPosition.setFromMatrixPosition(w);
@@ -89,13 +57,6 @@ export function Model(props) {
     console.groupEnd();
 
     // 4. Update OrbitControls target to keep the camera focused on the dragged node
-    if (transformControlsRef.current) {
-      transformControlsRef.current.target.copy(nodeWorldPosition);
-      // If OrbitControls damping is enabled, you MUST call .update()
-      if (transformControlsRef.current.enableDamping) {
-        transformControlsRef.current.update();
-      }
-    }
   }, [selectedNode, transformControlsRef]);
 
 
@@ -172,19 +133,15 @@ export function Model(props) {
         return null; // Don't render non-mesh/non-bone nodes directly here
       })}
 
-      {/* TransformControls for the selected node */}
       {selectedNode && (
-        <TransformControls
+        <PivotControls
           ref={transformControlsRef}
-          onDrag={handleDrag} // If you want to react to dragging
-          offset={selectedNode.position}
-          onMount={(e) => { // Attach to the domElement for pointer events
-            console.log("mounted");
+          position={selectedNode.position}
+          onDrag={handleDrag}
+          onMount={(e) => {
             e.domElement = gl.domElement;
           }}
-          // The `object` prop automatically attaches it,
-          // or you can use `transformControlsRef.current.attach(selectedNode)` in useEffect
-          // object={selectedNode}
+          object={selectedNode}
         />
 
       )}
