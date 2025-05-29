@@ -1,15 +1,20 @@
 import os
 import json
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from pose_generator import PoseGenerator
 
 app = Flask(__name__)
-generator = PoseGenerator()
 
+# ✅ Enable CORS for all origins (for development)
+# For production, replace '*' with your frontend URL
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+generator = PoseGenerator()
 PREDICTIONS_FILE = "predictions.json"
 
-# In-memory fallback
+# In-memory fallback store
 prediction_store = {}
 
 def save_prediction_data(prediction_id, data):
@@ -22,8 +27,8 @@ def load_prediction_data():
         with open(PREDICTIONS_FILE, "r") as f:
             prediction_store.update(json.load(f))
 
+# Load existing predictions if file exists
 load_prediction_data()
-
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -37,6 +42,7 @@ def generate():
     input_path = os.path.join(generator.input_dir, filename)
     image.save(input_path)
 
+    # Change this to your backend's public URL in production
     webhook_url = "https://pose-reference-generator.onrender.com/webhook"
 
     try:
@@ -49,14 +55,12 @@ def generate():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route("/status/<prediction_id>", methods=["GET"])
 def check_status(prediction_id):
     data = prediction_store.get(prediction_id)
     if not data:
         return jsonify({"error": "Prediction ID not found"}), 404
     return jsonify(data), 200
-
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -74,7 +78,6 @@ def webhook():
             json.dump(prediction_store, f)
 
     return "", 204
-
 
 if __name__ == "__main__":
     app.run(debug=True)
