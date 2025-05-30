@@ -195,13 +195,6 @@ export function Model({ orthoCameraRef, ...props }) {
       {selectedBone && (
         <TransformControls object={selectedBone} mode={mode} />
       )}
-      {/*
-        OrbitControls:
-        - We attach a ref to it to access its instance.
-        - makeDefault={false} is important because we want our OrthographicCamera to be the default.
-        - enabled={!selectedBone} correctly disables controls when a bone is selected for TransformControls.
-        - We ensure it's always rendered so its state persists.
-      */}
       <OrbitControls
         ref={orbitControlsRef}
         makeDefault={false}

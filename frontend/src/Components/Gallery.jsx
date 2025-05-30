@@ -1,10 +1,10 @@
 import React, {useMemo} from 'react';
 
 
-export function Gallery({images}){
-    const succeededImages = useMemo(()=> images.filter(image => image.status === 'succeeded'), [images]); ;
-    const failedImages = useMemo(()=> images.filter(image => image.status === 'failed'), [images]); ;
-    const waitImages = useMemo(()=> images.filter(image => image.status === 'starting'), [images]); ;
+export function Gallery({images,update}){
+    const succeededImages = images.filter(image => image.status === 'succeeded');
+    const failedImages = images.filter(image => image.status === 'failed');
+    const waitImages = images.filter(image => image.status === 'starting');
     return (
         <div className="flex flex-col gap-4">
             <h1>Gallery</h1>
