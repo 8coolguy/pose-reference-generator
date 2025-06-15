@@ -105,28 +105,21 @@ export function Model({ orthoCameraRef, ...props }) {
         helper.material.opacity = 0.8;
       }
     }
-  }, [selectedBone, boneMap]); // Re-run if selectedBone or boneMap changes
+  }, [selectedBone, boneMap]);
 
-  // Initial camera setup (runs once on mount)
   useEffect(() => {
     if (orthoCameraRef.current && orbitControlsRef.current) {
-      // Set initial camera position and target based on the model's bounding box
       const bbox = new THREE.Box3().setFromObject(clone);
       const center = new THREE.Vector3();
       bbox.getCenter(center);
-
-      // Set initial camera position relative to the model's center
       orthoCameraRef.current.position.copy(center).add(CAMERA_INITIAL_OFFSET);
-      // Set the controls target to the model's center
       orbitControlsRef.current.target.copy(center);
       orthoCameraRef.current.zoom = 30  ;
-      // Update camera projection matrix and controls
       orthoCameraRef.current.updateProjectionMatrix();
       orbitControlsRef.current.update();
     }
-  }, [clone, orthoCameraRef, orbitControlsRef]); // Only run once after clone and refs are available
+  }, [clone, orthoCameraRef, orbitControlsRef]);
 
-  // useFrame for continuous updates (camera follow, frustum adjustment, controls update)
   useFrame(() => {
     const camera = orthoCameraRef.current;
     const controls = orbitControlsRef.current;
@@ -141,35 +134,21 @@ export function Model({ orthoCameraRef, ...props }) {
       bbox.getCenter(cameraTarget); // Otherwise, target the center of the model
     }
 
-    // Smoothly interpolate the OrbitControls target
     controls.target.lerp(cameraTarget, 0.05); // Adjust lerp factor for smoother movement
-
-    // Update camera frustum for responsiveness
     const aspect = size.width / size.height;
-    // Calculate new frustum bounds based on current zoom and aspect ratio
     const currentFrustumHeight = frustumSize / camera.zoom;
     camera.left = -currentFrustumHeight * aspect / 2;
     camera.right = currentFrustumHeight * aspect / 2;
     camera.top = currentFrustumHeight / 2;
     camera.bottom = -currentFrustumHeight / 2;
 
-    camera.updateProjectionMatrix(); // Crucial after changing frustum bounds or zoom
-
-    // Update OrbitControls (essential if damping is enabled)
+    camera.updateProjectionMatrix();
     controls.update();
   });
 
 
   return (
     <group ref={group} {...props} dispose={null} onPointerDown={handlePointerDown}>
-      {/*
-        OrthographicCamera:
-        - We pass the ref from the parent to ensure the instance is stable.
-        - makeDefault tells R3F to use this camera for rendering.
-        - We REMOVE static 'zoom' and 'position' props here.
-          These will be managed by OrbitControls and our useFrame/useEffect logic.
-        - near/far are typically static for orthographic cameras.
-      */}
       <OrthographicCamera
         ref={orthoCameraRef}
         makeDefault
@@ -183,7 +162,7 @@ export function Model({ orthoCameraRef, ...props }) {
             <group name="Object_2">
               <group name="RootNode">
                 <group name="Object_4">
-                  <primitive object={clone} /> {/* Render the cloned scene */}
+                  <primitive object={clone} />
                   <skinnedMesh name="Object_6" geometry={nodes.Object_6.geometry} material={materials.body1} skeleton={nodes.Object_6.skeleton} />
                 </group>
               </group>
@@ -199,15 +178,14 @@ export function Model({ orthoCameraRef, ...props }) {
         ref={orbitControlsRef}
         makeDefault={false}
         enabled={!selectedBone}
-        // Orthographic camera specific settings for OrbitControls
         enableZoom={true}
         zoomSpeed={1.0}
         enablePan={true}
         panSpeed={1.0}
         enableRotate={true}
         rotateSpeed={1.0}
-        dampingFactor={0.25} // Keep damping for smooth movement
-        screenSpacePanning={true} // Recommended for orthographic cameras
+        dampingFactor={0.25}
+        screenSpacePanning={true}
       />
     </group>
   );

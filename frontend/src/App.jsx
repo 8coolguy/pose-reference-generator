@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback, useEffect, memo} from 'react'
 import { Views } from "./Components/Camera.jsx"
 import { Prompt } from "./Components/Prompt.jsx"
 import { Gallery } from "./Components/Gallery.jsx"
+import { Tutorial } from "./Components/Tutorial.jsx"
 import './output.css'
 const BACKEND =  "https://pose-reference-generator.onrender.com/";
 const MAX_REQUESTS = 3;
@@ -80,8 +81,10 @@ function App() {
         .catch((error) => console.error('Upload failed:', error));
     }, 'image/png');
   }
+  const [visible, setVisible] = useState(true);
   return (
     <div className="w-full h-full">
+      <Tutorial visible={visible} setVisible={setVisible}/>
       <h1>Pose Reference Generator</h1>
       <div className="flex h-10/12 w-full flex-row">
         <div className="min-h-full w-10/12">
@@ -91,7 +94,7 @@ function App() {
           <Gallery className="bg-opacity-90 backdrop-blur-sm z-50 p-4 overflow-y-auto shadow-lg" images={images} update={update}/>
         </div>
       </div>
-      <Prompt input={input} setInput={setInput} submit={submit}/>
+      <Prompt setVisible={setVisible} input={input} setInput={setInput} submit={submit}/>
     </div>
   )
 }
