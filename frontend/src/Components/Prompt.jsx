@@ -1,5 +1,5 @@
 
-export function Prompt({input, setInput, submit}){
+export function Prompt({input, setInput, submit, setVisible}){
     function handleChange(event){
         setInput(event.target.value);
     }
@@ -10,7 +10,7 @@ export function Prompt({input, setInput, submit}){
                 value={input}
                 onChange={handleChange}
                 rows={1}
-                placeholder="Type your message here..."
+                placeholder="Describe where you would like to see your pose here..."
                 className="flex-grow p-3 rounded-lg bg-gray-700 text-white resize-none
                             focus:outline-none focus:ring-2 focus:ring-blue-500
                             overflow-y-auto custom-scrollbar" // custom-scrollbar for styling scrollbar
@@ -25,6 +25,7 @@ export function Prompt({input, setInput, submit}){
                 >
                 Send
                 </button>
+                <button onClick={()=>setVisible(true)}>help</button>
             </div>
         </div>
     )

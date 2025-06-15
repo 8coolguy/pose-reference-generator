@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^10.0.8",
     "@react-three/fiber": "^9.1.2",
+    "@tailwindcss/cli": "^4.1.10",
     "@tailwindcss/vite": "^4.1.7",
     "@types/three": "^0.176.0",
     "react": "^19.1.0",
